@@ -332,3 +332,42 @@ func RemoveGoogleIdByUUID(uuid []byte) error {
 
 	return nil
 }
+
+// function to retrieve UUID from account username
+func FetchUUIDFromUsername(username string) ([]byte, error) {
+	var uuid []byte
+	err := handle.QueryRow("SELECT uuid FROM accounts WHERE username = ?", username).Scan(&uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	return uuid, nil
+}
+
+// function to retrieve a complete list of all accounts UUID & username
+func FetchAllUUIDAndUsername() ([][]byte, []string, error) {
+	var uuids [][]byte
+	var usernames []string
+
+	results, err := handle.Query("SELECT uuid, username FROM accounts")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	defer results.Close()
+
+	for results.Next() {
+		var uuid []byte
+		var username string
+
+		err = results.Scan(&uuid, &username)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		uuids = append(uuids, uuid)
+		usernames = append(usernames, username)
+	}
+
+	return uuids, usernames, nil
+}
