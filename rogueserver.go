@@ -33,6 +33,7 @@ import (
 func main() {
 	// flag stuff
 	debug := flag.Bool("debug", false, "use debug mode")
+	createuser := flag.Bool("createuser", false, "launch server in create user mode")
 
 	proto := flag.String("proto", "tcp", "protocol for api to use (tcp, unix)")
 	addr := flag.String("addr", "0.0.0.0:8001", "network address for api to listen on")
@@ -55,6 +56,9 @@ func main() {
 
 	gameurl := flag.String("gameurl", "https://pokerogue.dakurei.ovh", "URL for game server")
 
+	username := flag.String("username", "", "new user username")
+	password := flag.String("password", "", "new user password")
+
 	flag.Parse()
 
 	account.GameURL = *gameurl
@@ -75,6 +79,20 @@ func main() {
 	err := db.Init(*dbuser, *dbpass, *dbproto, *dbaddr, *dbname)
 	if err != nil {
 		log.Fatalf("failed to initialize database: %s", err)
+	}
+
+	// create user and terminate if createuser mode
+	if *createuser {
+		log.Printf("Launch in createuser mode !")
+
+		err = account.Register(*username, *password)
+		if err != nil {
+			log.Fatalf("failed to create user: %s", err)
+			return
+		}
+
+		log.Printf("Create user %s with success !", *username)
+		return
 	}
 
 	// create listener
