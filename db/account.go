@@ -238,3 +238,38 @@ func FetchUsernameFromUUID(uuid []byte) (string, error) {
 
 	return username, nil
 }
+
+// function to retrieve UUID from account username
+func FetchUUIDFromUsername(username string) ([]byte, error) {
+	var uuid []byte
+	err := handle.QueryRow("SELECT uuid FROM accounts WHERE username = ?", username).Scan(&uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	return uuid, nil
+}
+
+// function to retrieve a complete list of all accounts UUID
+func FetchAllUUID() ([][]byte, error) {
+	var uuids [][]byte
+
+	results, err := handle.Query("SELECT uuid FROM accounts")
+	if err != nil {
+		return nil, err
+	}
+
+	defer results.Close()
+
+	for results.Next() {
+		var uuid []byte
+		err = results.Scan(&uuid)
+		if err != nil {
+			return nil, err
+		}
+
+		uuids = append(uuids, uuid)
+	}
+
+	return uuids, nil
+}

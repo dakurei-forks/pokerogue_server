@@ -27,6 +27,7 @@ import (
 
 	"github.com/pagefaultgames/rogueserver/api"
 	"github.com/pagefaultgames/rogueserver/api/account"
+	"github.com/pagefaultgames/rogueserver/api/savedata"
 	"github.com/pagefaultgames/rogueserver/db"
 )
 
@@ -34,6 +35,10 @@ func main() {
 	// flag stuff
 	debug := flag.Bool("debug", false, "use debug mode")
 	createuser := flag.Bool("createuser", false, "launch server in create user mode")
+	vouchergift := flag.Bool("vouchergift", false, "launch server in voucher gift mode")
+	vouchergifttype := flag.String("vouchergifttype", "0", "type of voucher to give in voucher gift mode")
+	vouchergiftamount := flag.Int("vouchergiftamount", 1, "amount of voucher to give in voucher gift mode")
+	vouchergiftall := flag.Bool("vouchergiftall", false, "voucher gift mode apply to all users instead of particular username")
 
 	proto := flag.String("proto", "tcp", "protocol for api to use (tcp, unix)")
 	addr := flag.String("addr", "0.0.0.0:8001", "network address for api to listen on")
@@ -72,6 +77,56 @@ func main() {
 		}
 
 		log.Printf("Create user %s with success !", *username)
+		return
+	}
+
+	// gift specify voucher to user or all user and terminate if voucher gift mode
+	if *vouchergift {
+		var vouchergifttype string = *vouchergifttype
+		var userUuids [][]byte
+
+		if *vouchergiftall {
+			log.Printf("Voucher Gift for everybody")
+			userUuids, err = db.FetchAllUUID()
+			if err != nil {
+				log.Fatalf("failed to retrieve all users: %s", err)
+				return
+			}
+		} else {
+			log.Printf("Voucher Gift for %s", *username)
+			userUuid, err := db.FetchUUIDFromUsername(*username)
+			if err != nil {
+				log.Fatalf("failed to retrieve user: %s", err)
+				return
+			}
+			userUuids = append(userUuids, userUuid)
+		}
+
+		for i := 0; i < len(userUuids); i++ {
+			systemSave, err := savedata.GetSystem(userUuids[i])
+			if err != nil {
+				log.Fatalf("failed to retrieve user systemSave: %s", err)
+				return
+			}
+
+			systemSave.VoucherCounts[vouchergifttype] += *vouchergiftamount
+
+			err = db.StoreSystemSaveData(userUuids[i], systemSave)
+			if err != nil {
+				log.Fatalf("failed to update systemSave data: %s", err)
+				return
+			}
+
+			err = db.UpdateAccountStats(userUuids[i], systemSave.GameStats, systemSave.VoucherCounts)
+			if err != nil {
+				log.Fatalf("failed to update account stats: %s", err)
+				return
+			}
+
+			log.Printf("  Gifted to %s", userUuids[i])
+		}
+
+		log.Printf("Voucher Gift mode exit with success !")
 		return
 	}
 
