@@ -53,7 +53,7 @@ func main() {
 
 	callbackurl := flag.String("callbackurl", "http://localhost:8001/", "Callback URL for Oauth2 Client")
 
-	gameurl := flag.String("gameurl", "https://pokerogue.net", "URL for game server")
+	gameurl := flag.String("gameurl", "https://pokerogue.dakurei.ovh", "URL for game server")
 
 	flag.Parse()
 

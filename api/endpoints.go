@@ -630,7 +630,7 @@ func handleProviderCallback(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 			Secure:   true,
 			SameSite: http.SameSiteStrictMode,
-			Domain:   "pokerogue.net",
+			Domain:   "pokerogue.dakurei.ovh",
 			Expires:  time.Now().Add(time.Hour * 24 * 30 * 3), // 3 months
 		})
 	}
