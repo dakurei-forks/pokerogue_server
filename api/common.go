@@ -42,7 +42,7 @@ func Init(mux *http.ServeMux) error {
 
 	// account
 	mux.HandleFunc("GET /account/info", handleAccountInfo)
-	mux.HandleFunc("POST /account/register", handleAccountRegister)
+	// mux.HandleFunc("POST /account/register", handleAccountRegister)
 	mux.HandleFunc("POST /account/login", handleAccountLogin)
 	mux.HandleFunc("POST /account/changepw", handleAccountChangePW)
 	mux.HandleFunc("GET /account/logout", handleAccountLogout)
