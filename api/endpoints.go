@@ -305,10 +305,8 @@ func handleUpdateAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if storedTrainerId > 0 || storedSecretId > 0 {
-		if data.System.TrainerId != storedTrainerId || data.System.SecretId != storedSecretId {
-			httpError(w, r, fmt.Errorf("session out of date: stored trainer or secret ID does not match"), http.StatusBadRequest)
-			return
-		}
+		httpError(w, r, fmt.Errorf("session out of date: stored trainer or secret ID does not match"), http.StatusBadRequest)
+		return
 	} else {
 		err = db.UpdateTrainerIds(data.System.TrainerId, data.System.SecretId, uuid)
 		if err != nil {
