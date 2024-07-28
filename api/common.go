@@ -42,9 +42,9 @@ func Init(mux *http.ServeMux) error {
 
 	// account
 	mux.HandleFunc("GET /account/info", handleAccountInfo)
-	mux.HandleFunc("POST /account/register", handleAccountRegister)
+	// mux.HandleFunc("POST /account/register", handleAccountRegister)
 	mux.HandleFunc("POST /account/login", handleAccountLogin)
-	mux.HandleFunc("POST /account/changepw", handleAccountChangePW)
+	// mux.HandleFunc("POST /account/changepw", handleAccountChangePW)
 	mux.HandleFunc("GET /account/logout", handleAccountLogout)
 
 	// game
@@ -64,8 +64,8 @@ func Init(mux *http.ServeMux) error {
 	mux.HandleFunc("GET /daily/rankingpagecount", handleDailyRankingPageCount)
 
 	// auth
-	mux.HandleFunc("/auth/{provider}/callback", handleProviderCallback)
-	mux.HandleFunc("/auth/{provider}/logout", handleProviderLogout)
+	// mux.HandleFunc("/auth/{provider}/callback", handleProviderCallback)
+	// mux.HandleFunc("/auth/{provider}/logout", handleProviderLogout)
 	return nil
 }
 
